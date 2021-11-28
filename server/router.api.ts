@@ -10,3 +10,10 @@ apiRouter.get("/", (req, res) => {
     },
   });
 });
+
+apiRouter.get("/hello", (req, res) => {
+  res.send({
+    success: true,
+    data: "你好！这是来自服务端的问候",
+  });
+});
