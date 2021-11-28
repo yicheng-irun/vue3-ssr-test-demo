@@ -2,32 +2,34 @@ import {
   createMemoryHistory,
   createRouter,
   createWebHistory,
+  Router,
   RouteRecordRaw,
 } from "vue-router";
-import Home from "../views/Home.vue";
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: "/",
-    name: "Home",
-    component: Home,
-  },
-  {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-  },
-];
-
-const router = createRouter({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
-  routes,
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const pages = import.meta.glob("../views/**/*.page.vue");
+const routes: RouteRecordRaw[] = [];
+Object.keys(pages).forEach((path: string) => {
+  const match = path.match(/\.\/views(.*)\.page\.vue$/);
+  if (match) {
+    const name = match[1].toLocaleLowerCase();
+    let routerPath = name.replace(/\/index$/, "");
+    if (routerPath === "/home") {
+      routerPath = "/";
+    }
+    routes.push({
+      path: routerPath,
+      component: pages[path],
+    });
+  }
 });
 
-export default router;
+export function createPageRouter(): Router {
+  return createRouter({
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
+    routes,
+  });
+}
