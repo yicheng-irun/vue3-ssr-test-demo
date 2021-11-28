@@ -1,10 +1,30 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <template v-for="(item, index) in routers" :key="index">
+      <span>
+        <router-link :to="item">[{{ item }}]</router-link>
+        <span> | </span>
+      </span>
+    </template>
   </div>
   <router-view />
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  mounted() {
+    console.log(this.$router.getRoutes());
+  },
+  computed: {
+    routers(): string[] {
+      return this.$router.getRoutes().map((item) => {
+        return item.path;
+      });
+    },
+  },
+});
+</script>
 
 <style lang="scss">
 #app {
