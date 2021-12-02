@@ -3,7 +3,7 @@ import { resolve } from "path";
 import { readFileSync } from "fs";
 import { apiRouter } from "./router.api";
 import { serverRender } from "../dist/server/entry-server";
-// import manifest from "../dist/client/ssr-manifest.json";
+import manifest from "../dist/client/ssr-manifest.json";
 
 const app = express();
 
@@ -18,11 +18,15 @@ async function start() {
         resolve(__dirname, "../dist/client/index.html")
       ).toString();
 
-      const { serverRenderHtml, initState } = (await serverRender({
-        req,
-      })) as {
+      const { serverRenderHtml, initState, preloadLinks } = (await serverRender(
+        {
+          req,
+          manifest,
+        }
+      )) as {
         serverRenderHtml: string;
         initState: unknown;
+        preloadLinks: string;
       };
 
       const html = template
@@ -30,7 +34,8 @@ async function start() {
         .replace(
           "<!--init-state-->",
           `<script>window.initState=${JSON.stringify(initState)}</script>`
-        );
+        )
+        .replace(`<!--preload-links-->`, preloadLinks);
 
       res.send(html);
     } catch (e) {

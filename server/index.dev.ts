@@ -35,6 +35,7 @@ async function start() {
 
       const { serverRenderHtml, initState } = (await entryServer.serverRender({
         req,
+        manifest: {},
       })) as {
         serverRenderHtml: string;
         initState: unknown;
