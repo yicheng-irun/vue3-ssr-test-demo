@@ -1,8 +1,26 @@
 import { createStore } from "vuex";
 
-export default createStore({
-  state: {},
+export interface StateType {
+  fetchDemoValue: {
+    value: string;
+  };
+}
+
+export default createStore<StateType>({
+  state: {
+    fetchDemoValue: {
+      value: "",
+    },
+  },
   mutations: {},
-  actions: {},
+  actions: {
+    async fetchDemoTest({ state }) {
+      const rsp = await this.$axios.get<{
+        success: boolean;
+        data: string;
+      }>("/api/hello");
+      state.fetchDemoValue.value = rsp.data.data;
+    },
+  },
   modules: {},
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createSSRApp } from "vue";
 import { Request } from "express";
 import { renderToString } from "@vue/server-renderer";
@@ -5,6 +6,7 @@ import App from "./App.vue";
 import { createPageRouter } from "./router";
 import store from "./store";
 import { axiosServertPlugin } from "./plugins/axios.server";
+import { SSRContext } from "./vuex";
 
 export async function serverRender({ req }: { req: Request }): Promise<{
   serverRenderHtml: string;
@@ -16,6 +18,23 @@ export async function serverRender({ req }: { req: Request }): Promise<{
   await router.isReady();
   app.use(router);
   app.use(store);
+
+  const ssrContext: SSRContext = {
+    app,
+    route: router.currentRoute.value,
+    router,
+    store,
+  };
+
+  if (!ssrContext.route.matched.length) {
+    throw new Error("404 Not Found");
+  }
+  const matchedRouter = ssrContext.route.matched[0];
+  // @ts-ignore
+  if (typeof matchedRouter.components.default.fetch === "function") {
+    // @ts-ignore
+    await matchedRouter.components.default.fetch(ssrContext);
+  }
 
   const serverRenderHtml = await renderToString(app, {});
 
