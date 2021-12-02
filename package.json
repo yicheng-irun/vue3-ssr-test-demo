@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "ts-node-dev -P server/tsconfig.json --respawn --watch server server/index.dev.ts",
+    "start": "ts-node-dev -P server/tsconfig.json --respawn --watch server server/index.prod.ts",
     "serve": "vite",
-    "build": "vite build",
+    "build:client": "vite build --ssrManifest --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.ts --outDir dist/server",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
