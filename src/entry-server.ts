@@ -4,7 +4,7 @@ import { Request } from "express";
 import { renderToString } from "@vue/server-renderer";
 import App from "./App.vue";
 import { createPageRouter } from "./router";
-import store from "./store";
+import { createPageStore } from "./store";
 import { axiosServertPlugin } from "./plugins/axios.server";
 import { SSRContext } from "./vuex";
 
@@ -13,6 +13,7 @@ export async function serverRender({ req }: { req: Request }): Promise<{
   initState: unknown;
 }> {
   const app = createSSRApp(App);
+  const store = createPageStore();
   axiosServertPlugin(app);
   const router = createPageRouter();
   router.replace(req.originalUrl);

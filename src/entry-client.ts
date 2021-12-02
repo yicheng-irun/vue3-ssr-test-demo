@@ -3,7 +3,7 @@ import { createSSRApp } from "vue";
 import App from "./App.vue";
 import { axiosClientPlugin } from "./plugins/axios.client";
 import { createPageRouter } from "./router";
-import store from "./store";
+import { createPageStore } from "./store";
 import { SSRContext } from "./vuex";
 
 // @ts-ignore
@@ -13,6 +13,7 @@ const initState = window.initState as {
 
 async function main() {
   const app = createSSRApp(App);
+  const store = createPageStore();
   axiosClientPlugin(app);
 
   const router = createPageRouter();
@@ -28,9 +29,9 @@ async function main() {
     store,
   };
 
-  await new Promise((resolve) => {
-    setTimeout(resolve, 1000);
-  });
+  // await new Promise((resolve) => {
+  //   setTimeout(resolve, 1000);
+  // });
 
   if (initState) {
     store.replaceState(initState.state);

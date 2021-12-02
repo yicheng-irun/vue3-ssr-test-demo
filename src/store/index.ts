@@ -1,4 +1,4 @@
-import { createStore } from "vuex";
+import { createStore, Store } from "vuex";
 
 export interface StateType {
   fetchDemoValue: {
@@ -6,21 +6,23 @@ export interface StateType {
   };
 }
 
-export default createStore<StateType>({
-  state: {
-    fetchDemoValue: {
-      value: "",
+export function createPageStore(): Store<StateType> {
+  return createStore<StateType>({
+    state: {
+      fetchDemoValue: {
+        value: "",
+      },
     },
-  },
-  mutations: {},
-  actions: {
-    async fetchDemoTest({ state }) {
-      const rsp = await this.$axios.get<{
-        success: boolean;
-        data: string;
-      }>("/api/hello");
-      state.fetchDemoValue.value = rsp.data.data;
+    mutations: {},
+    actions: {
+      async fetchDemoTest({ state }) {
+        const rsp = await this.$axios.get<{
+          success: boolean;
+          data: string;
+        }>("/api/hello");
+        state.fetchDemoValue.value = rsp.data.data;
+      },
     },
-  },
-  modules: {},
-});
+    modules: {},
+  });
+}
