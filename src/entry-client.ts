@@ -6,6 +6,11 @@ import { createPageRouter } from "./router";
 import store from "./store";
 import { SSRContext } from "./vuex";
 
+// @ts-ignore
+const initState = window.initState as {
+  state: any;
+};
+
 async function main() {
   const app = createSSRApp(App);
   axiosClientPlugin(app);
@@ -23,19 +28,23 @@ async function main() {
     store,
   };
 
-  // await new Promise((resolve) => {
-  //   setTimeout(resolve, 1000);
-  // });
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1000);
+  });
 
-  if (!ssrContext.route.matched.length) {
-    throw new Error("404 Not Found");
+  if (initState) {
+    store.replaceState(initState.state);
   }
-  const matchedRouter = ssrContext.route.matched[0];
-  // @ts-ignore
-  if (typeof matchedRouter.components.default.fetch === "function") {
-    // @ts-ignore
-    await matchedRouter.components.default.fetch(ssrContext);
-  }
+
+  // if (!ssrContext.route.matched.length) {
+  //   throw new Error("404 Not Found");
+  // }
+  // const matchedRouter = ssrContext.route.matched[0];
+  // // @ts-ignore
+  // if (typeof matchedRouter.components.default.fetch === "function") {
+  //   // @ts-ignore
+  //   await matchedRouter.components.default.fetch(ssrContext);
+  // }
 
   app.mount("#app");
 }

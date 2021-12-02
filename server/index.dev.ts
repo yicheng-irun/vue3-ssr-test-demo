@@ -33,13 +33,19 @@ async function start() {
         resolve(__dirname, "../src/entry-server.ts")
       );
 
-      const { serverRenderHtml } = (await entryServer.serverRender({
+      const { serverRenderHtml, initState } = (await entryServer.serverRender({
         req,
       })) as {
         serverRenderHtml: string;
+        initState: unknown;
       };
 
-      const html = template.replace("<!--app-html-->", serverRenderHtml);
+      const html = template
+        .replace("<!--app-html-->", serverRenderHtml)
+        .replace(
+          "<!--init-state-->",
+          `<script>window.initState=${JSON.stringify(initState)}</script>`
+        );
 
       res.send(html);
     } catch (e) {

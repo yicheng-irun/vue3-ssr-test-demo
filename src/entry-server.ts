@@ -10,6 +10,7 @@ import { SSRContext } from "./vuex";
 
 export async function serverRender({ req }: { req: Request }): Promise<{
   serverRenderHtml: string;
+  initState: unknown;
 }> {
   const app = createSSRApp(App);
   axiosServertPlugin(app);
@@ -36,9 +37,14 @@ export async function serverRender({ req }: { req: Request }): Promise<{
     await matchedRouter.components.default.fetch(ssrContext);
   }
 
+  const initState = {
+    state: store.state,
+  };
+
   const serverRenderHtml = await renderToString(app, {});
 
   return {
     serverRenderHtml,
+    initState,
   };
 }
