@@ -40,12 +40,20 @@ async function main() {
   // if (!ssrContext.route.matched.length) {
   //   throw new Error("404 Not Found");
   // }
-  // const matchedRouter = ssrContext.route.matched[0];
-  // // @ts-ignore
-  // if (typeof matchedRouter.components.default.fetch === "function") {
-  //   // @ts-ignore
-  //   await matchedRouter.components.default.fetch(ssrContext);
-  // }
+
+  router.beforeResolve(async (to, from, next) => {
+    const matchedRouter = to.matched[0];
+    try {
+      // @ts-ignore
+      if (typeof matchedRouter.components.default.fetch === "function") {
+        // @ts-ignore
+        await matchedRouter.components.default.fetch(ssrContext);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    next();
+  });
 
   app.mount("#app");
 }
